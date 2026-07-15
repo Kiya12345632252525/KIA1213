@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="fa" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KiaTyping</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+    body {
+      background: #0b0b0e;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      padding: 12px;
+      margin: 0;
+    }
+    .container {
+      max-width: 1100px;
+      width: 100%;
+      background: radial-gradient(circle at 20% 20%, #1f1f2a, #0e0e12);
+      border-radius: 48px;
+      padding: 24px 18px 34px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 0 1px #ff6a0033, 0 0 30px #ff6a0015;
+      position: relative;
+      min-height: 600px;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* صفحه خوش‌آمدگویی */
+    #welcomePage {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    #welcomePage h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ff8800, #ff4400);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    #welcomePage p {
+      color: #b0b0d0;
+      font-size: 1.2rem;
+      max-width: 500px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
+    }
+    #welcomePage .lang-selector {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+    #welcomePage .lang-selector label {
+      background: #1a1a28;
+      padding: 8px 18px;
+      border-radius: 40px;
+      border: 1px solid #2f2f4a;
+      color: #b0b0d0;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    #welcomePage .lang-selector label:hover { border-color: #ff6a00; }
+    #welcomePage .lang-selector input[type="radio"] { display: none; }
+    #welcomePage .lang-selector input[type="radio"]:checked + span {
+      color: #ff8833;
+      font-weight: 600;
+    }
+    #welcomePage .btn-enter {
+      background: #ff6a00;
+      border: none;
+      padding: 12px 40px;
+      border-radius: 40px;
+      color: #0e0e12;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #993f00, 0 4px 20px #ff6a0044;
+      transition: 0.1s;
+    }
+    #welcomePage .btn-enter:active { transform: translateY(4px); box-shadow: 0 0 0 #993f00; }
+
+    /* هدر */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 6px 16px 6px;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 1px solid #ff6a0022;
+      margin-bottom: 18px;
+    }
+    .app-brand { display: flex; align-items: center; gap: 12px; }
+    .app-name {
+      font-size: 1.7rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ff8800, #ff4400);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.5px;
+    }
+    .app-author {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #1a1a28;
+      padding: 4px 14px 4px 10px;
+      border-radius: 40px;
+      border: 1px solid #2f2f4a;
+      color: #b0b0d0;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+    .app-author .blue-tick { color: #1da1f2; font-size: 1.3rem; font-weight: 700; filter: drop-shadow(0 0 6px #1da1f266); }
+
+    .select-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .select-group select {
+      background: #1a1a28;
+      color: #e0e0f0;
+      border: 1px solid #2f2f4a;
+      border-radius: 40px;
+      padding: 6px 16px 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      font-family: inherit;
+    }
+    .select-group select:focus { border-color: #ff6a00; }
+
+    .keyboard {
+      background: #14141b;
+      border-radius: 24px;
+      padding: 16px 14px 14px;
+      box-shadow: inset 0 -6px 0 #0a0a0e, 0 12px 28px #000000aa;
+      border: 1px solid #ff6a0022;
+      margin-bottom: 24px;
+    }
+    .row { display: flex; gap: 5px; margin-bottom: 5px; justify-content: center; flex-wrap: wrap; }
+    .key {
+      background: #1e1e28;
+      color: #eaeaea;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 0;
+      height: 48px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 5px 0 #0a0a0e, 0 2px 10px #00000066;
+      transition: all 0.07s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      min-width: 42px;
+      border: 1px solid #2f2f3f;
+      color: #cfcfdf;
+      will-change: transform, box-shadow, background;
+      font-size: 13px;
+      font-family: 'Segoe UI', 'Vazir', system-ui, sans-serif;
+    }
+    .key-backspace { min-width: 88px; }
+    .key-tab { min-width: 64px; }
+    .key-capslock { min-width: 76px; }
+    .key-enter { min-width: 82px; }
+    .key-shift { min-width: 96px; }
+    .key-ctrl, .key-win, .key-alt { min-width: 56px; }
+    .key-space { min-width: 260px; }
+    .key-menu { min-width: 48px; }
+
+    .key.active {
+      animation: rgbGlow 0.25s ease forwards;
+      transform: scale(0.94);
+      border-color: #fff6;
+      box-shadow: 0 0 20px #ff8800, 0 0 60px #ff4400, 0 0 100px #aa22ff;
+    }
+    @keyframes rgbGlow {
+      0% { background: #ff6a00; box-shadow: 0 0 15px #ff8800, 0 0 40px #ff4400; }
+      20% { background: #00aaff; box-shadow: 0 0 20px #00aaff, 0 0 60px #0066ff; }
+      40% { background: #aa44ff; box-shadow: 0 0 25px #aa44ff, 0 0 70px #8822ff; }
+      60% { background: #ff2266; box-shadow: 0 0 30px #ff2266, 0 0 80px #ff0044; }
+      80% { background: #44ff88; box-shadow: 0 0 25px #44ff88, 0 0 60px #00cc66; }
+      100% { background: #ffaa00; box-shadow: 0 0 30px #ffaa00, 0 0 80px #ff6600; }
+    }
+
+    .typing-panel {
+      background: #101016;
+      border-radius: 24px;
+      padding: 18px 20px 22px;
+      border: 1px solid #ff6a0022;
+      box-shadow: inset 0 0 30px #00000088;
+      transition: all 0.25s ease;
+    }
+    .typing-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 10px;
+    }
+    .stats {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      color: #b8b8d0;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .stats span {
+      background: #1b1b26;
+      padding: 4px 14px;
+      border-radius: 40px;
+      border: 1px solid #2f2f42;
+      color: #ddd;
+      box-shadow: inset 0 2px 4px #00000055;
+    }
+    .stats b { color: #ff8833; margin-right: 4px; }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background: #1f1f2e;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 40px;
+      color: #eee;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #0a0a0e, 0 2px 12px #00000077;
+      transition: all 0.08s linear;
+      border: 1px solid #ff6a0033;
+    }
+    .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #0a0a0e; }
+    .btn-primary {
+      background: #ff6a00;
+      color: #0e0e12;
+      border-color: #ffaa44;
+      box-shadow: 0 4px 0 #993f00, 0 2px 16px #ff6a0044;
+    }
+    .btn-primary:active { background: #e05e00; }
+    .btn-sound { background: #2a2a3a; border-color: #555; }
+    .btn-guide {
+      background: #2a1a3a;
+      border-color: #8a44aa;
+      color: #d0a0ff;
+    }
+    .btn-guide:active { background: #1a0a2a; }
+
+    #typingArea {
+      width: 100%;
+      background: #0b0b12;
+      border: 1px solid #2a2a3e;
+      border-radius: 18px;
+      padding: 16px 18px;
+      font-size: 1.2rem;
+      font-family: 'Fira Code', 'Vazir', 'Courier New', monospace;
+      color: #f0f0ff;
+      resize: vertical;
+      min-height: 90px;
+      outline: none;
+      transition: all 0.2s;
+      box-shadow: inset 0 6px 18px #000000aa;
+      line-height: 1.6;
+      letter-spacing: 0.5px;
+      direction: ltr;
+    }
+    #typingArea:focus {
+      border-color: #ff8833;
+      box-shadow: inset 0 6px 18px #000000ee, 0 0 20px #ff6a0022;
+    }
+    #typingArea::placeholder { color: #555; font-weight: 300; font-size: 0.95rem; text-align: center; }
+    .hidden-textarea { display: none !important; }
+
+    /* راهنمای حرفه‌ای */
+    .guide-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .guide-overlay.show { display: flex; }
+    .guide-box {
+      background: #1a1a2a;
+      border-radius: 32px;
+      padding: 30px 35px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid #ff6a0044;
+      box-shadow: 0 0 60px #ff6a0022;
+      position: relative;
+    }
+    .guide-box .close-guide {
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      font-size: 2rem;
+      color: #ff6666;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+    .guide-box .close-guide:hover { transform: scale(1.2); color: #ff2222; }
+    .guide-box h2 {
+      color: #ff8833;
+      margin-bottom: 16px;
+      font-size: 1.5rem;
+      border-bottom: 1px solid #2f2f4a;
+      padding-bottom: 10px;
+    }
+    .guide-box p {
+      color: #d0d0e0;
+      line-height: 1.8;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+    .guide-box ul {
+      color: #c0c0d8;
+      padding-right: 20px;
+      line-height: 2;
+    }
+    .guide-box ul li { margin-bottom: 4px; }
+    .guide-box .highlight { color: #ffaa55; font-weight: 600; }
+
+    .lock-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(6px);
+      border-radius: 48px;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: #ff4444;
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 30px;
+      z-index: 999;
+      gap: 20px;
+    }
+    .lock-overlay.show { display: flex; }
+    .lock-overlay small { font-size: 1rem; color: #ff8888; font-weight: 400; }
+
+    @media (max-width: 850px) {
+      .container { padding: 12px 8px; }
+      .key { min-width: 30px; height: 38px; font-size: 10px; padding: 4px 0; border-radius: 5px; }
+      .key-backspace { min-width: 56px; }
+      .key-tab { min-width: 44px; }
+      .key-capslock { min-width: 50px; }
+      .key-enter { min-width: 52px; }
+      .key-shift { min-width: 60px; }
+      .key-ctrl, .key-win, .key-alt { min-width: 38px; }
+      .key-space { min-width: 120px; }
+      .key-menu { min-width: 32px; }
+      .row { gap: 3px; margin-bottom: 3px; }
+      .keyboard { padding: 10px 6px; }
+      .stats { font-size: 0.65rem; gap: 6px; }
+      .btn { font-size: 0.65rem; padding: 4px 10px; }
+      #typingArea { font-size: 0.95rem; padding: 10px; min-height: 60px; }
+      .app-name { font-size: 1.2rem; }
+      .app-author { font-size: 0.75rem; padding: 2px 10px; }
+      .lock-overlay { font-size: 1.2rem; }
+      #welcomePage h1 { font-size: 2.2rem; }
+      #welcomePage p { font-size: 1rem; }
+      .select-group select { font-size: 0.7rem; padding: 4px 10px; }
+      .guide-box { padding: 20px; }
+      .guide-box h2 { font-size: 1.2rem; }
+    }
+    @media (max-width: 480px) {
+      .key { min-width: 22px; height: 30px; font-size: 8px; border-radius: 4px; }
+      .key-backspace { min-width: 40px; }
+      .key-tab { min-width: 32px; }
+      .key-capslock { min-width: 36px; }
+      .key-enter { min-width: 38px; }
+      .key-shift { min-width: 44px; }
+      .key-ctrl, .key-win, .key-alt { min-width: 28px; }
+      .key-space { min-width: 80px; }
+      .key-menu { min-width: 24px; }
+      .row { gap: 2px; margin-bottom: 2px; }
+      .app-name { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container" id="mainContainer">
+  <!-- صفحه خوش‌آمدگویی -->
+  <div class="page active" id="welcomePage">
+    <h1>KiaTyping</h1>
+    <p id="welcomeDesc">The ultimate typing practice tool with real keyboard sounds and RGB effects.</p>
+    <div class="lang-selector" id="welcomeLangSelector"></div>
+    <button class="btn-enter" id="enterBtn">Enter</button>
+  </div>
+
+  <!-- صفحه اصلی -->
+  <div class="page" id="mainPage">
+    <div class="app-header">
+      <div class="app-brand">
+        <span class="app-name" id="appNameDisplay">KiaTyping</span>
+      </div>
+      <div class="select-group">
+        <select id="uiLangSelect"></select>
+        <select id="typingLangSelect"></select>
+      </div>
+      <div class="app-author" id="authorDisplay">
+        <span id="authorIdDisplay">@kiarash1792</span>
+        <span class="blue-tick">✓</span>
+      </div>
+    </div>
+
+    <div class="keyboard" id="keyboardContainer">
+      <div class="row" id="row0"></div>
+      <div class="row" id="row1"></div>
+      <div class="row" id="row2"></div>
+      <div class="row" id="row3"></div>
+      <div class="row" id="row4"></div>
+    </div>
+
+    <div class="typing-panel" id="typingPanel">
+      <div class="typing-header">
+        <div class="stats">
+          <span id="statsChars">🔤 <b id="charCount">0</b> <span id="charsLabel">Chars</span></span>
+          <span id="statsWpm">⚡ <b id="wpmDisplay">0</b> WPM</span>
+          <span id="statsError">❌ <b id="errorPercent">0</b>% <span id="errorLabel">Error</span></span>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="toggleTypingBtn">📝 <span id="hideLabel">Hide</span></button>
+          <button class="btn" id="clearTextBtn">🗑️ <span id="clearLabel">Clear</span></button>
+          <button class="btn btn-sound" id="soundToggleBtn">🔊 <span id="soundLabel">Sound</span></button>
+          <button class="btn btn-guide" id="guideBtn">📘 <span id="guideLabel">Guide</span></button>
+        </div>
+      </div>
+      <textarea id="typingArea" placeholder="Start typing here..."></textarea>
+    </div>
+  </div>
+
+  <div class="lock-overlay" id="lockOverlay">
+    <span>⛔ برنامه قفل شد</span>
+    <small>تغییر غیرمجاز در نام برنامه یا شناسه سازنده تشخیص داده شد.</small>
+  </div>
+</div>
+
+<!-- راهنمای حرفه‌ای -->
+<div class="guide-overlay" id="guideOverlay">
+  <div class="guide-box">
+    <button class="close-guide" id="closeGuideBtn">×</button>
+    <h2 id="guideTitle">📘 راهنمای حرفه‌ای تایپ ده‌انگشتی</h2>
+    <p><span class="highlight" id="guidePoint1">۱. وضعیت دست‌ها:</span> <span id="guideText1">انگشتان را روی کلیدهای <strong>F</strong> و <strong>J</strong> قرار دهید (برجستگی دارند).</span></p>
+    <p><span class="highlight" id="guidePoint2">۲. تقسیم‌بندی کلیدها:</span></p>
+    <ul id="guideList">
+      <li id="guideItem1">🔹 <strong>دست چپ:</strong> Q, W, E, R, T / A, S, D, F, G / Z, X, C, V, B</li>
+      <li id="guideItem2">🔹 <strong>دست راست:</strong> Y, U, I, O, P / H, J, K, L / N, M</li>
+      <li id="guideItem3">🔹 <strong>انگشت‌ها:</strong> هر انگشت مسئول چند کلید مشخص است.</li>
+    </ul>
+    <p><span class="highlight" id="guidePoint3">۳. نکات کلیدی:</span></p>
+    <ul id="guideTips">
+      <li id="guideTip1">✅ همیشه مچ‌ها صاف و انگشتان خمیده باشند.</li>
+      <li id="guideTip2">✅ بدون نگاه به کیبورد تایپ کنید (لمسی).</li>
+      <li id="guideTip3">✅ از شست برای <kbd>Space</kbd> استفاده کنید.</li>
+      <li id="guideTip4">✅ برای <kbd>Shift</kbd> از انگشت کوچک مخالف استفاده کنید.</li>
+      <li id="guideTip5">✅ سرعت را فدای دقت نکنید؛ ابتدا دقت، سپس سرعت.</li>
+    </ul>
+    <p id="guideFooter" style="margin-top:12px; color:#888; font-size:0.85rem;">💡 این راهنما را هر زمان با کلیک روی دکمه «راهنما» می‌توانید مشاهده کنید.</p>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ---------- امنیت ----------
+    const APP_NAME = "KiaTyping";
+    const AUTHOR_ID = "@kiarash1792";
+    const appNameEl = document.getElementById('appNameDisplay');
+    const authorIdEl = document.getElementById('authorIdDisplay');
+    const lockOverlay = document.getElementById('lockOverlay');
+
+    function lockApp() {
+      lockOverlay.classList.add('show');
+      document.body.style.pointerEvents = 'none';
+      lockOverlay.style.pointerEvents = 'auto';
+      const ta = document.getElementById('typingArea');
+      if (ta) ta.disabled = true;
+    }
+    function checkIntegrity() {
+      if (appNameEl.textContent.trim() !== APP_NAME || authorIdEl.textContent.trim() !== AUTHOR_ID) lockApp();
+    }
+    appNameEl.textContent = APP_NAME;
+    authorIdEl.textContent = AUTHOR_ID;
+    setInterval(checkIntegrity, 300);
+
+    // ---------- ترجمه‌ها ----------
+    const translations = {
+      en: {
+        welcomeDesc: "The ultimate typing practice tool with real keyboard sounds and RGB effects.",
+        enterBtn: "Enter",
+        charsLabel: "Chars",
+        errorLabel: "Error",
+        hideLabel: "Hide",
+        clearLabel: "Clear",
+        soundLabel: "Sound",
+        muteLabel: "Mute",
+        guideLabel: "Guide",
+        placeholder: "Start typing here...",
+        uiLangLabel: "Interface",
+        typingLangLabel: "Keyboard",
+        guideTitle: "📘 Professional 10-Finger Typing Guide",
+        guidePoint1: "1. Hand Position:",
+        guideText1: "Place your fingers on the <strong>F</strong> and <strong>J</strong> keys (they have bumps).",
+        guidePoint2: "2. Key Distribution:",
+        guideItem1: "🔹 <strong>Left hand:</strong> Q, W, E, R, T / A, S, D, F, G / Z, X, C, V, B",
+        guideItem2: "🔹 <strong>Right hand:</strong> Y, U, I, O, P / H, J, K, L / N, M",
+        guideItem3: "🔹 <strong>Fingers:</strong> Each finger is responsible for specific keys.",
+        guidePoint3: "3. Key Tips:",
+        guideTip1: "✅ Keep wrists straight and fingers curved.",
+        guideTip2: "✅ Type without looking at the keyboard (touch typing).",
+        guideTip3: "✅ Use your thumb for <kbd>Space</kbd>.",
+        guideTip4: "✅ Use the opposite pinky for <kbd>Shift</kbd>.",
+        guideTip5: "✅ Don't sacrifice accuracy for speed; first accuracy, then speed.",
+        guideFooter: "💡 You can open this guide anytime by clicking the 'Guide' button.",
+        statsChars: "🔤 {count} {label}",
+        statsWpm: "⚡ {wpm} WPM",
+        statsError: "❌ {percent}% {label}"
+      },
+      fa: {
+        welcomeDesc: "ابزار نهایی تمرین تایپ با صدای واقعی کیبورد و افکت‌های RGB.",
+        enterBtn: "ورود",
+        charsLabel: "حروف",
+        errorLabel: "خطا",
+        hideLabel: "مخفی",
+        clearLabel: "پاک",
+        soundLabel: "صدا",
+        muteLabel: "بی‌صدا",
+        guideLabel: "راهنما",
+        placeholder: "برای تمرین تایپ اینجا بنویسید...",
+        uiLangLabel: "زبان رابط",
+        typingLangLabel: "زبان تایپ",
+        guideTitle: "📘 راهنمای حرفه‌ای تایپ ده‌انگشتی",
+        guidePoint1: "۱. وضعیت دست‌ها:",
+        guideText1: "انگشتان را روی کلیدهای <strong>F</strong> و <strong>J</strong> قرار دهید (برجستگی دارند).",
+        guidePoint2: "۲. تقسیم‌بندی کلیدها:",
+        guideItem1: "🔹 <strong>دست چپ:</strong> Q, W, E, R, T / A, S, D, F, G / Z, X, C, V, B",
+        guideItem2: "🔹 <strong>دست راست:</strong> Y, U, I, O, P / H, J, K, L / N, M",
+        guideItem3: "🔹 <strong>انگشت‌ها:</strong> هر انگشت مسئول چند کلید مشخص است.",
+        guidePoint3: "۳. نکات کلیدی:",
+        guideTip1: "✅ همیشه مچ‌ها صاف و انگشتان خمیده باشند.",
+        guideTip2: "✅ بدون نگاه به کیبورد تایپ کنید (لمسی).",
+        guideTip3: "✅ از شست برای <kbd>Space</kbd> استفاده کنید.",
+        guideTip4: "✅ برای <kbd>Shift</kbd> از انگشت کوچک مخالف استفاده کنید.",
+        guideTip5: "✅ سرعت را فدای دقت نکنید؛ ابتدا دقت، سپس سرعت.",
+        guideFooter: "💡 این راهنما را هر زمان با کلیک روی دکمه «راهنما» می‌توانید مشاهده کنید.",
+        statsChars: "🔤 {count} {label}",
+        statsWpm: "⚡ {wpm} WPM",
+        statsError: "❌ {percent}% {label}"
+      },
+      ar: {
+        welcomeDesc: "أداة التدريب النهائية للكتابة بأصوات لوحة المفاتيح الحقيقية وتأثيرات RGB.",
+        enterBtn: "دخول",
+        charsLabel: "أحرف",
+        errorLabel: "خطأ",
+        hideLabel: "إخفاء",
+        clearLabel: "مسح",
+        soundLabel: "صوت",
+        muteLabel: "كتم",
+        guideLabel: "دليل",
+        placeholder: "ابدأ الكتابة هنا...",
+        uiLangLabel: "لغة الواجهة",
+        typingLangLabel: "لغة الكتابة",
+        guideTitle: "📘 دليل احترافي للكتابة بعشرة أصابع",
+        guidePoint1: "١. وضع اليدين:",
+        guideText1: "ضع أصابعك على المفتاحين <strong>F</strong> و <strong>J</strong> (لديهما نتوءات).",
+        guidePoint2: "٢. توزيع المفاتيح:",
+        guideItem1: "🔹 <strong>اليد اليسرى:</strong> Q, W, E, R, T / A, S, D, F, G / Z, X, C, V, B",
+        guideItem2: "🔹 <strong>اليد اليمنى:</strong> Y, U, I, O, P / H, J, K, L / N, M",
+        guideItem3: "🔹 <strong>الأصابع:</strong> كل إصبع مسؤول عن مفاتيح محددة.",
+        guidePoint3: "٣. نصائح أساسية:",
+        guideTip1: "✅ حافظ على استقامة المعصمين وانحناء الأصابع.",
+        guideTip2: "✅ اكتب دون النظر إلى لوحة المفاتيح (الكتابة باللمس).",
+        guideTip3: "✅ استخدم إبهامك لـ <kbd>Space</kbd>.",
+        guideTip4: "✅ استخدم الخنصر المعاكس لـ <kbd>Shift</kbd>.",
+        guideTip5: "✅ لا تضحِّي بالدقة من أجل السرعة؛ أولاً الدقة، ثم السرعة.",
+        guideFooter: "💡 يمكنك فتح هذا الدليل في أي وقت بالضغط على زر 'دليل'.",
+        statsChars: "🔤 {count} {label}",
+        statsWpm: "⚡ {wpm} WPM",
+        statsError: "❌ {percent}% {label}"
+      },
+      tr: {
+        welcomeDesc: "Gerçek klavye sesleri ve RGB efektleri ile nihai yazma pratik aracı.",
+        enterBtn: "Giriş",
+        charsLabel: "Karakter",
+        errorLabel: "Hata",
+        hideLabel: "Gizle",
+        clearLabel: "Temizle",
+        soundLabel: "Ses",
+        muteLabel: "Sessiz",
+        guideLabel: "Kılavuz",
+        placeholder: "Buraya yazmaya başlayın...",
+        uiLangLabel: "Arayüz Dili",
+        typingLangLabel: "Yazma Dili",
+        guideTitle: "📘 Profesyonel 10 Parmak Yazma Kılavuzu",
+        guidePoint1: "1. El Pozisyonu:",
+        guideText1: "Parmaklarınızı <strong>F</strong> ve <strong>J</strong> tuşlarına yerleştirin (çıkıntıları vardır).",
+        guidePoint2: "2. Tuş Dağılımı:",
+        guideItem1: "🔹 <strong>Sol el:</strong> Q, W, E, R, T / A, S, D, F, G / Z, X, C, V, B",
+        guideItem2: "🔹 <strong>Sağ el:</strong> Y, U, I, O, P / H, J, K, L / N, M",
+        guideItem3: "🔹 <strong>Parmaklar:</strong> Her parmak belirli tuşlardan sorumludur.",
+        guidePoint3: "3. Önemli İpuçları:",
+        guideTip1: "✅ Bilekleri düz ve parmakları kavisli tutun.",
+        guideTip2: "✅ Klavyeye bakmadan yazın (dokunarak yazma).",
+        guideTip3: "✅ <kbd>Space</kbd> için başparmağınızı kullanın.",
+        guideTip4: "✅ <kbd>Shift</kbd> için karşı serçe parmağınızı kullanın.",
+        guideTip5: "✅ Hız için doğruluktan ödün vermeyin; önce doğruluk, sonra hız.",
+        guideFooter: "💡 Bu kılavuzu istediğiniz zaman 'Kılavuz' düğmesine tıklayarak açabilirsiniz.",
+        statsChars: "🔤 {count} {label}",
+        statsWpm: "⚡ {wpm} WPM",
+        statsError: "❌ {percent}% {label}"
+      },
+      es: {
+        welcomeDesc: "La herramienta definitiva para practicar mecanografía con sonidos de teclado reales y efectos RGB.",
+        enterBtn: "Entrar",
+        charsLabel: "Caracteres",
+        errorLabel: "Error",
+        hideLabel: "Ocultar",
+        clearLabel: "Limpiar",
+        soundLabel: "Sonido",
+        muteLabel: "Silenciar",
+        guideLabel: "Guía",
+        placeholder: "Empieza a escribir aquí...",
+        uiLangLabel: "Idioma de interfaz",
+        typingLangLabel: "Idioma de escritura",
+        guideTitle: "📘 Guía profesional de mecanografía con 10 dedos",
+        guidePoint1: "1. Posición de las manos:",
+        guideText1: "Coloque los dedos en las teclas <strong>F</strong> y <strong>J</strong> (tienen protuberancias).",
+        guidePoint2: "2. Distribución de teclas:",
+        guideItem1: "🔹 <strong>Mano izquierda:</strong> Q, W, E, R, T / A, S, D, F, G / Z, X, C, V, B",
+        guideItem2: "🔹 <strong>Mano derecha:</strong> Y, U, I, O, P / H, J, K, L / N, M",
+        guideItem3: "🔹 <strong>Dedos:</strong> Cada dedo es responsable de teclas específicas.",
+        guidePoint3: "3. Consejos clave:",
+        guideTip1: "✅ Mantenga las muñecas rectas y los dedos curvados.",
+        guideTip2: "✅ Escriba sin mirar el teclado (mecanografía táctil).",
+        guideTip3: "✅ Use el pulgar para <kbd>Space</kbd>.",
+        guideTip4: "✅ Use el meñique opuesto para <kbd>Shift</kbd>.",
+        guideTip5: "✅ No sacrifique la precisión por la velocidad; primero precisión, luego velocidad.",
+        guideFooter: "💡 Puede abrir esta guía en cualquier momento haciendo clic en el botón 'Guía'.",
+        statsChars: "🔤 {count} {label}",
+        statsWpm: "⚡ {wpm} WPM",
+        statsError: "❌ {percent}% {label}"
+      },
+      fr: {
+        welcomeDesc: "L'outil ultime pour pratiquer la dactylographie avec de vrais sons de clavier et des effets RVB.",
+        enterBtn: "Entrer",
+        charsLabel: "Caractères",
+        errorLabel: "Erreur",
+        hideLabel: "Cacher",
+        clearLabel: "Effacer",
+        soundLabel: "Son",
+        muteLabel: "Muette",
+        guideLabel: "Guide",
+        placeholder: "Commencez à taper ici...",
+        uiLangLabel: "Langue interface",
+        typingLangLabel: "Langue frappe",
+        guideTitle: "📘 Guide professionnel de dactylographie à 10 doigts",
+        guidePoint1: "1. Position des mains:",
+        guideText1: "Placez vos doigts sur les touches <strong>F</strong> et <strong>J</strong> (elles ont des bosses).",
+        guidePoint2: "2. Répartition des touches:",
+        guideItem1: "🔹 <strong>Main gauche:</strong> Q, W, E, R, T / A, S, D, F, G / Z, X, C, V, B",
+        guideItem2: "🔹 <strong>Main droite:</strong> Y, U, I, O, P / H, J, K, L / N, M",
+        guideItem3: "🔹 <strong>Doigts:</strong> Chaque doigt est responsable de touches spécifiques.",
+        guidePoint3: "3. Conseils clés:",
+        guideTip1: "✅ Gardez les poignets droits et les doigts courbés.",
+        guideTip2: "✅ Tapez sans regarder le clavier (dactylographie tactile).",
+        guideTip3: "✅ Utilisez votre pouce pour <kbd>Space</kbd>.",
+        guideTip4: "✅ Utilisez l'auriculaire opposé pour <kbd>Shift</kbd>.",
+        guideTip5: "✅ Ne sacrifiez pas la précision pour la vitesse ; d'abord la précision, puis la vitesse.",
+        guideFooter: "💡 Vous pouvez ouvrir ce guide à tout moment en cliquant sur le bouton 'Guide'.",
+        statsChars: "🔤 {count} {label}",
+        statsWpm: "⚡ {wpm} WPM",
+        statsError: "❌ {percent}% {label}"
+      },
+      de: {
+        welcomeDesc: "Das ultimative Tipp-Trainingswerkzeug mit echten Tastaturgeräuschen und RGB-Effekten.",
+        enterBtn: "Eintreten",
+        charsLabel: "Zeichen",
+        errorLabel: "Fehler",
+        hideLabel: "Verstecken",
+        clearLabel: "Löschen",
+        soundLabel: "Ton",
+        muteLabel: "Stumm",
+        guideLabel: "Anleitung",
+        placeholder: "Beginnen Sie hier zu tippen...",
+        uiLangLabel: "Oberflächensprache",
+        typingLangLabel: "Tippsprache",
+        guideTitle: "📘 Professionelle 10-Finger-Tippanleitung",
+        guidePoint1: "1. Handposition:",
+        guideText1: "Legen Sie Ihre Finger auf die <strong>F</strong>- und <strong>J</strong>-Tasten (sie haben Noppen).",
+        guidePoint2: "2. Tastenverteilung:",
+        guideItem1: "🔹 <strong>Linke Hand:</strong> Q, W, E, R, T / A, S, D, F, G / Z, X, C, V, B",
+        guideItem2: "🔹 <strong>Rechte Hand:</strong> Y, U, I, O, P / H, J, K, L / N, M",
+        guideItem3: "🔹 <strong>Finger:</strong> Jeder Finger ist für bestimmte Tasten verantwortlich.",
+        guidePoint3: "3. Wichtige Tipps:",
+        guideTip1: "✅ Halten Sie Handgelenke gerade und Finger gekrümmt.",
+        guideTip2: "✅ Tippen Sie ohne auf die Tastatur zu schauen (Berührungstippen).",
+        guideTip3: "✅ Verwenden Sie Ihren Daumen für <kbd>Space</kbd>.",
+        guideTip4: "✅ Verwenden Sie den gegenüberliegenden kleinen Finger für <kbd>Shift</kbd>.",
+        guideTip5: "✅ Opfern Sie nicht die Genauigkeit für die Geschwindigkeit; zuerst Genauigkeit, dann Geschwindigkeit.",
+        guideFooter: "💡 Sie können diese Anleitung jederzeit durch Klicken auf die Schaltfläche 'Anleitung' öffnen.",
+        statsChars: "🔤 {count} {label}",
+        statsWpm: "⚡ {wpm} WPM",
+        statsError: "❌ {percent}% {label}"
+      },
+      ru: {
+        welcomeDesc: "Лучший инструмент для практики набора текста с реалистичными звуками клавиатуры и RGB-эффектами.",
+        enterBtn: "Войти",
+        charsLabel: "Символы",
+        errorLabel: "Ошибка",
+        hideLabel: "Скрыть",
+        clearLabel: "Очистить",
+        soundLabel: "Звук",
+        muteLabel: "Без звука",
+        guideLabel: "Руководство",
+        placeholder: "Начните печатать здесь...",
+        uiLangLabel: "Язык интерфейса",
+        typingLangLabel: "Язык набора",
+        guideTitle: "📘 Профессиональное руководство по набору десятью пальцами",
+        guidePoint1: "1. Положение рук:",
+        guideText1: "Поместите пальцы на клавиши <strong>F</strong> и <strong>J</strong> (на них есть выступы).",
+        guidePoint2: "2. Распределение клавиш:",
+        guideItem1: "🔹 <strong>Левая рука:</strong> Q, W, E, R, T / A, S, D, F, G / Z, X, C, V, B",
+        guideItem2: "🔹 <strong>Правая рука:</strong> Y, U, I, O, P / H, J, K, L / N, M",
+        guideItem3: "🔹 <strong>Пальцы:</strong> Каждый палец отвечает за определенные клавиши.",
+        guidePoint3: "3. Ключевые советы:",
+        guideTip1: "✅ Держите запястья прямыми, а пальцы изогнутыми.",
+        guideTip2: "✅ Печатайте, не глядя на клавиатуру (слепой набор).",
+        guideTip3: "✅ Используйте большой палец для <kbd>Space</kbd>.",
+        guideTip4: "✅ Используйте противоположный мизинец для <kbd>Shift</kbd>.",
+        guideTip5: "✅ Не жертвуйте точностью ради скорости; сначала точность, затем скорость.",
+        guideFooter: "💡 Вы можете открыть это руководство в любое время, нажав кнопку 'Руководство'.",
+        statsChars: "🔤 {count} {label}",
+        statsWpm: "⚡ {wpm} WPM",
+        statsError: "❌ {percent}% {label}"
+      }
+    };
+
+    // نام زبان‌ها به صورت نمایشی
+    const langNames = {
+      en: 'English',
+      fa: 'فارسی',
+      ar: 'العربية',
+      tr: 'Türkçe',
+      es: 'Español',
+      fr: 'Français',
+      de: 'Deutsch',
+      ru: 'Русский'
+    };
+
+    // ---------- تعریف کیبورد برای زبان‌های مختلف ----------
+    // حروف الفبای هر زبان (ردیف‌های کیبورد)
+    const keyboardLayouts = {
+      en: [
+        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+        ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\\'],
+        ['CapsLock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', "'", 'Enter'],
+        ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 'Shift'],
+        ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl']
+      ],
+      fa: [
+        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+        ['Tab', 'ض', 'ص', 'ث', 'ق', 'ف', 'غ', 'ع', 'ه', 'خ', 'ح', 'ج', 'چ', '\\'],
+        ['CapsLock', 'ش', 'س', 'ی', 'ب', 'ل', 'ا', 'ت', 'ن', 'م', 'ک', 'گ', 'Enter'],
+        ['Shift', 'ظ', 'ط', 'ز', 'ر', 'ذ', 'د', 'ئ', 'و', '.', '/', 'Shift'],
+        ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl']
+      ],
+      ar: [
+        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+        ['Tab', 'ض', 'ص', 'ث', 'ق', 'ف', 'غ', 'ع', 'ه', 'خ', 'ح', 'ج', 'د', '\\'],
+        ['CapsLock', 'ش', 'س', 'ی', 'ب', 'ل', 'ا', 'ت', 'ن', 'م', 'ک', 'گ', 'Enter'],
+        ['Shift', 'ظ', 'ط', 'ز', 'ر', 'ذ', 'د', 'ئ', 'و', '.', '/', 'Shift'],
+        ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl']
+      ],
+      tr: [
+        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+        ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'ğ', 'ü', '\\'],
+        ['CapsLock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'ş', 'i', 'Enter'],
+        ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'ö', 'ç', '.', 'Shift'],
+        ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl']
+      ],
+      es: [
+        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+        ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '´', '+', '\\'],
+        ['CapsLock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'ñ', '´', 'Enter'],
+        ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '-', 'Shift'],
+        ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl']
+      ],
+      fr: [
+        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+        ['Tab', 'A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '^', '$', '\\'],
+        ['CapsLock', 'Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'ù', 'Enter'],
+        ['Shift', 'W', 'X', 'C', 'V', 'B', 'N', ',', ';', ':', '!', 'Shift'],
+        ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl']
+      ],
+      de: [
+        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+        ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P', 'ü', '+', '\\'],
+        ['CapsLock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'ö', 'ä', 'Enter'],
+        ['Shift', 'Y', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '-', 'Shift'],
+        ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl']
+      ],
+      ru: [
+        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+        ['Tab', 'Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ', '\\'],
+        ['CapsLock', 'Ф', 'Ы', 'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э', 'Enter'],
+        ['Shift', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', '.', 'Shift'],
+        ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl']
+      ]
+    };
+
+    // نگاشت برای ترجمه حروف (برای زبان‌های غیرلاتین)
+    const charMaps = {
+      fa: {
+        'ض':'q','ص':'w','ث':'e','ق':'r','ف':'t','غ':'y',
+        'ع':'u','ه':'i','خ':'o','ح':'p','ج':'[','چ':']',
+        'ش':'a','س':'s','ی':'d','ب':'f','ل':'g','ا':'h',
+        'ت':'j','ن':'k','م':'l','ک':';','گ':"'",
+        'ظ':'z','ط':'x','ز':'c','ر':'v','ذ':'b','د':'n',
+        'ئ':'m','و':',','.':'.','/':'/'
+      },
+      ar: {
+        'ض':'q','ص':'w','ث':'e','ق':'r','ف':'t','غ':'y',
+        'ع':'u','ه':'i','خ':'o','ح':'p','ج':'[','د':']',
+        'ش':'a','س':'s','ی':'d','ب':'f','ل':'g','ا':'h',
+        'ت':'j','ن':'k','م':'l','ک':';','گ':"'",
+        'ظ':'z','ط':'x','ز':'c','ر':'v','ذ':'b','د':'n',
+        'ئ':'m','و':',','.':'.','/':'/'
+      },
+      ru: {
+        'Й':'q','Ц':'w','У':'e','К':'r','Е':'t','Н':'y','Г':'u','Ш':'i','Щ':'o','З':'p','Х':'[','Ъ':']',
+        'Ф':'a','Ы':'s','В':'d','А':'f','П':'g','Р':'h','О':'j','Л':'k','Д':'l','Ж':';','Э':"'",
+        'Я':'z','Ч':'x','С':'c','М':'v','И':'b','Т':'n','Ь':'m','Б':',','Ю':'.'
+      }
+    };
+
+    let currentUiLang = 'en';
+    let currentTypingLang = 'en';
+    let soundEnabled = true;
+
+    // ---------- عناصر DOM ----------
+    const welcomePage = document.getElementById('welcomePage');
+    const mainPage = document.getElementById('mainPage');
+    const welcomeDesc = document.getElementById('welcomeDesc');
+    const enterBtn = document.getElementById('enterBtn');
+    const welcomeLangSelector = document.getElementById('welcomeLangSelector');
+    const uiLangSelect = document.getElementById('uiLangSelect');
+    const typingLangSelect = document.getElementById('typingLangSelect');
+    const charsLabel = document.getElementById('charsLabel');
+    const errorLabel = document.getElementById('errorLabel');
+    const hideLabel = document.getElementById('hideLabel');
+    const clearLabel = document.getElementById('clearLabel');
+    const soundLabel = document.getElementById('soundLabel');
+    const guideLabel = document.getElementById('guideLabel');
+    const typingArea = document.getElementById('typingArea');
+    const toggleBtn = document.getElementById('toggleTypingBtn');
+    const clearBtn = document.getElementById('clearTextBtn');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const guideBtn = document.getElementById('guideBtn');
+    const closeGuideBtn = document.getElementById('closeGuideBtn');
+    const guideOverlay = document.getElementById('guideOverlay');
+    const charCountEl = document.getElementById('charCount');
+    const wpmDisplay = document.getElementById('wpmDisplay');
+    const errorPercentEl = document.getElementById('errorPercent');
+    const statsChars = document.getElementById('statsChars');
+    const statsWpm = document.getElementById('statsWpm');
+    const statsError = document.getElementById('statsError');
+
+    // المان‌های راهنما
+    const guideTitle = document.getElementById('guideTitle');
+    const guideText1 = document.getElementById('guideText1');
+    const guidePoint1 = document.getElementById('guidePoint1');
+    const guidePoint2 = document.getElementById('guidePoint2');
+    const guideItem1 = document.getElementById('guideItem1');
+    const guideItem2 = document.getElementById('guideItem2');
+    const guideItem3 = document.getElementById('guideItem3');
+    const guidePoint3 = document.getElementById('guidePoint3');
+    const guideTip1 = document.getElementById('guideTip1');
+    const guideTip2 = document.getElementById('guideTip2');
+    const guideTip3 = document.getElementById('guideTip3');
+    const guideTip4 = document.getElementById('guideTip4');
+    const guideTip5 = document.getElementById('guideTip5');
+    const guideFooter = document.getElementById('guideFooter');
+
+    // ---------- توابع ترجمه ----------
+    function t(key, params = {}) {
+      let str = translations[currentUiLang]?.[key] || translations['en'][key] || key;
+      for (let [k, v] of Object.entries(params)) {
+        str = str.replace(`{${k}}`, v);
+      }
+      return str;
+    }
+
+    function updateUI() {
+      welcomeDesc.textContent = t('welcomeDesc');
+      enterBtn.textContent = t('enterBtn');
+      charsLabel.textContent = t('charsLabel');
+      errorLabel.textContent = t('errorLabel');
+      hideLabel.textContent = t('hideLabel');
+      clearLabel.textContent = t('clearLabel');
+      soundLabel.textContent = soundEnabled ? t('soundLabel') : t('muteLabel');
+      guideLabel.textContent = t('guideLabel');
+      typingArea.placeholder = t('placeholder');
+
+      // راهنما
+      guideTitle.textContent = t('guideTitle');
+      guidePoint1.textContent = t('guidePoint1');
+      guideText1.innerHTML = t('guideText1');
+      guidePoint2.textContent = t('guidePoint2');
+      guideItem1.innerHTML = t('guideItem1');
+      guideItem2.innerHTML = t('guideItem2');
+      guideItem3.innerHTML = t('guideItem3');
+      guidePoint3.textContent = t('guidePoint3');
+      guideTip1.innerHTML = t('guideTip1');
+      guideTip2.innerHTML = t('guideTip2');
+      guideTip3.innerHTML = t('guideTip3');
+      guideTip4.innerHTML = t('guideTip4');
+      guideTip5.innerHTML = t('guideTip5');
+      guideFooter.textContent = t('guideFooter');
+
+      const len = typingArea.value.length;
+      const wpm = wpmDisplay.textContent;
+      const err = errorPercentEl.textContent;
+      statsChars.innerHTML = t('statsChars', { count: len, label: t('charsLabel') });
+      statsWpm.innerHTML = t('statsWpm', { wpm: wpm });
+      statsError.innerHTML = t('statsError', { percent: err, label: t('errorLabel') });
+      document.title = APP_NAME;
+    }
+
+    // ---------- ساخت کیبورد ----------
+    const rowIds = ['row0', 'row1', 'row2', 'row3', 'row4'];
+    const specialClass = {
+      'Backspace': 'key-backspace',
+      'Tab': 'key-tab',
+      'CapsLock': 'key-capslock',
+      'Enter': 'key-enter',
+      'Shift': 'key-shift',
+      'Ctrl': 'key-ctrl',
+      'Win': 'key-win',
+      'Alt': 'key-alt',
+      'Space': 'key-space',
+      'Menu': 'key-menu'
+    };
+
+    function buildKeyboard(lang) {
+      const layout = keyboardLayouts[lang] || keyboardLayouts['en'];
+      rowIds.forEach((id, idx) => {
+        const row = document.getElementById(id);
+        row.innerHTML = '';
+        layout[idx].forEach(label => {
+          const btn = document.createElement('button');
+          btn.className = 'key';
+          if (specialClass[label]) btn.classList.add(specialClass[label]);
+          btn.textContent = label;
+          // برای زبان‌هایی که نگاشت داریم، کلید فیزیکی رو مشخص می‌کنیم
+          let keyVal = label;
+          if (lang === 'fa' && charMaps.fa[label]) keyVal = charMaps.fa[label];
+          else if (lang === 'ar' && charMaps.ar[label]) keyVal = charMaps.ar[label];
+          else if (lang === 'ru' && charMaps.ru[label]) keyVal = charMaps.ru[label];
+          else keyVal = label.toLowerCase();
+          btn.dataset.key = keyVal;
+          row.appendChild(btn);
+        });
+      });
+      updateKeyMap();
+    }
+
+    function updateKeyMap() {
+      window.keyMapDOM = {};
+      document.querySelectorAll('.key').forEach(k => { window.keyMapDOM[k.dataset.key] = k; });
+    }
+
+    // ---------- صدا ----------
+    function playKeySound(type = 'click') {
+      if (!soundEnabled) return;
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioCtx.currentTime;
+        const isHeavy = (type === 'space' || type === 'enter');
+
+        const bufferSize = audioCtx.sampleRate * 0.025;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const gainNoise = audioCtx.createGain();
+        gainNoise.gain.setValueAtTime(isHeavy ? 0.08 : 0.18, now);
+        gainNoise.gain.exponentialRampToValueAtTime(0.001, now + (isHeavy ? 0.03 : 0.02));
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.value = isHeavy ? 600 : 2800;
+        noise.connect(filter);
+        filter.connect(gainNoise);
+        gainNoise.connect(audioCtx.destination);
+        noise.start(now);
+        noise.stop(now + (isHeavy ? 0.03 : 0.02));
+
+        const osc = audioCtx.createOscillator();
+        const gainOsc = audioCtx.createGain();
+        const freq = isHeavy ? 140 + Math.random()*60 : 1800 + Math.random()*500;
+        const dur = isHeavy ? 0.09 : 0.035;
+        osc.frequency.setValueAtTime(freq, now);
+        osc.type = 'sine';
+        gainOsc.gain.setValueAtTime(isHeavy ? 0.12 : 0.07, now);
+        gainOsc.gain.exponentialRampToValueAtTime(0.001, now + dur);
+        osc.connect(gainOsc);
+        gainOsc.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + dur);
+
+        if (isHeavy) {
+          const oscLow = audioCtx.createOscillator();
+          const gainLow = audioCtx.createGain();
+          oscLow.frequency.setValueAtTime(70 + Math.random()*20, now);
+          oscLow.type = 'sine';
+          gainLow.gain.setValueAtTime(0.2, now);
+          gainLow.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          oscLow.connect(gainLow);
+          gainLow.connect(audioCtx.destination);
+          oscLow.start(now);
+          oscLow.stop(now + 0.1);
+        } else {
+          const oscLow = audioCtx.createOscillator();
+          const gainLow = audioCtx.createGain();
+          oscLow.frequency.setValueAtTime(120, now);
+          oscLow.type = 'sine';
+          gainLow.gain.setValueAtTime(0.05, now);
+          gainLow.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+          oscLow.connect(gainLow);
+          gainLow.connect(audioCtx.destination);
+          oscLow.start(now);
+          oscLow.stop(now + 0.03);
+        }
+      } catch(e) { /* fallback */ }
+    }
+
+    // ---------- هایلایت ----------
+    function activateKey(keyChar) {
+      const key = window.keyMapDOM[keyChar.toLowerCase()];
+      if (key) {
+        key.classList.remove('active');
+        void key.offsetWidth;
+        key.classList.add('active');
+        setTimeout(() => key.classList.remove('active'), 280);
+      }
+    }
+
+    // ---------- آمار ----------
+    let errorCount = 0, wpm = 0, startTime = null;
+
+    function updateStats() {
+      const text = typingArea.value;
+      const len = text.length;
+      charCountEl.textContent = len;
+      if (len > 0 && startTime) {
+        const elapsed = (Date.now() - startTime) / 60000;
+        const words = len / 5;
+        wpm = Math.round(words / elapsed);
+        if (wpm < 0) wpm = 0;
+      } else { wpm = 0; }
+      wpmDisplay.textContent = wpm;
+      let err = errorCount;
+      if (len > 0) {
+        const ratio = Math.min(100, Math.round((err / len) * 100));
+        errorPercentEl.textContent = ratio;
+      } else { errorPercentEl.textContent = '0'; }
+      statsChars.innerHTML = t('statsChars', { count: len, label: t('charsLabel') });
+      statsWpm.innerHTML = t('statsWpm', { wpm: wpm });
+      statsError.innerHTML = t('statsError', { percent: errorPercentEl.textContent, label: t('errorLabel') });
+    }
+
+    // ---------- رویدادهای تایپ ----------
+    typingArea.addEventListener('input', function() {
+      if (!startTime && this.value.length > 0) startTime = Date.now();
+      updateStats();
+    });
+
+    typingArea.addEventListener('keydown', function(e) {
+      const key = e.key;
+      if (key === 'Backspace') {
+        errorCount += 1;
+        activateKey('backspace');
+        playKeySound('click');
+        setTimeout(updateStats, 10);
+        return;
+      }
+      if (key === 'Enter') {
+        activateKey('enter');
+        playKeySound('enter');
+        setTimeout(updateStats, 10);
+        return;
+      }
+      if (key === ' ') {
+        activateKey(' ');
+        playKeySound('space');
+        setTimeout(updateStats, 10);
+        return;
+      }
+      if (key === 'Tab') {
+        e.preventDefault();
+        activateKey('tab');
+        playKeySound('click');
+        const start = this.selectionStart;
+        this.value = this.value.slice(0, start) + '    ' + this.value.slice(start);
+        this.selectionStart = this.selectionEnd = start + 4;
+        updateStats();
+        return;
+      }
+      if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock'].includes(key)) {
+        activateKey(key.toLowerCase());
+        if (key === 'Shift' || key === 'Control' || key === 'Alt' || key === 'Meta') {
+          playKeySound('click');
+        }
+        e.preventDefault();
+        return;
+      }
+
+      // ترجمه برای زبان‌های غیرلاتین
+      if (currentTypingLang === 'fa' && charMaps.fa) {
+        const reverseMap = {};
+        for (let [k, v] of Object.entries(charMaps.fa)) {
+          reverseMap[v] = k;
+        }
+        if (key.length === 1 && reverseMap[key.toLowerCase()]) {
+          const char = reverseMap[key.toLowerCase()];
+          e.preventDefault();
+          const start = this.selectionStart;
+          this.value = this.value.slice(0, start) + char + this.value.slice(start);
+          this.selectionStart = this.selectionEnd = start + 1;
+          activateKey(key.toLowerCase());
+          playKeySound('click');
+          updateStats();
+          return;
+        }
+      }
+      if (currentTypingLang === 'ar' && charMaps.ar) {
+        const reverseMap = {};
+        for (let [k, v] of Object.entries(charMaps.ar)) {
+          reverseMap[v] = k;
+        }
+        if (key.length === 1 && reverseMap[key.toLowerCase()]) {
+          const char = reverseMap[key.toLowerCase()];
+          e.preventDefault();
+          const start = this.selectionStart;
+          this.value = this.value.slice(0, start) + char + this.value.slice(start);
+          this.selectionStart = this.selectionEnd = start + 1;
+          activateKey(key.toLowerCase());
+          playKeySound('click');
+          updateStats();
+          return;
+        }
+      }
+      if (currentTypingLang === 'ru' && charMaps.ru) {
+        const reverseMap = {};
+        for (let [k, v] of Object.entries(charMaps.ru)) {
+          reverseMap[v] = k;
+        }
+        if (key.length === 1 && reverseMap[key.toLowerCase()]) {
+          const char = reverseMap[key.toLowerCase()];
+          e.preventDefault();
+          const start = this.selectionStart;
+          this.value = this.value.slice(0, start) + char + this.value.slice(start);
+          this.selectionStart = this.selectionEnd = start + 1;
+          activateKey(key.toLowerCase());
+          playKeySound('click');
+          updateStats();
+          return;
+        }
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      const key = e.key;
+      if (key === 'Backspace') {
+        activateKey('backspace');
+        playKeySound('click');
+      } else if (key === 'Enter') {
+        activateKey('enter');
+        playKeySound('enter');
+      } else if (key === ' ') {
+        activateKey(' ');
+        playKeySound('space');
+      } else if (key === 'Tab') {
+        activateKey('tab');
+        playKeySound('click');
+      } else if (['Shift','Control','Alt','Meta','CapsLock'].includes(key)) {
+        activateKey(key.toLowerCase());
+        if (key === 'Shift' || key === 'Control' || key === 'Alt' || key === 'Meta') {
+          playKeySound('click');
+        }
+      } else if (key.length === 1) {
+        activateKey(key.toLowerCase());
+        playKeySound('click');
+      }
+    });
+
+    // ---------- دکمه‌ها ----------
+    toggleBtn.addEventListener('click', function() {
+      typingArea.classList.toggle('hidden-textarea');
+      hideLabel.textContent = typingArea.classList.contains('hidden-textarea') ? t('showLabel') : t('hideLabel');
+    });
+
+    clearBtn.addEventListener('click', function() {
+      typingArea.value = '';
+      errorCount = 0;
+      startTime = null;
+      updateStats();
+      typingArea.focus();
+    });
+
+    soundToggleBtn.addEventListener('click', function() {
+      soundEnabled = !soundEnabled;
+      soundLabel.textContent = soundEnabled ? t('soundLabel') : t('muteLabel');
+      if (soundEnabled) playKeySound('click');
+    });
+
+    guideBtn.addEventListener('click', function() {
+      guideOverlay.classList.toggle('show');
+      updateUI();
+    });
+    closeGuideBtn.addEventListener('click', function() {
+      guideOverlay.classList.remove('show');
+    });
+    guideOverlay.addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('show');
+    });
+
+    // کلیک روی کلیدهای مجازی
+    document.addEventListener('click', function(e) {
+      const keyEl = e.target.closest('.key');
+      if (!keyEl) return;
+      const key = keyEl.dataset.key;
+      if (key === 'backspace') {
+        const val = typingArea.value;
+        typingArea.value = val.slice(0, -1);
+        activateKey('backspace');
+        playKeySound('click');
+        errorCount += 1;
+      } else if (key === 'enter') {
+        typingArea.value += '\n';
+        activateKey('enter');
+        playKeySound('enter');
+      } else if (key === ' ') {
+        typingArea.value += ' ';
+        activateKey(' ');
+        playKeySound('space');
+      } else if (key === 'tab') {
+        typingArea.value += '    ';
+        activateKey('tab');
+        playKeySound('click');
+      } else if (['shift','ctrl','meta','alt','capslock','menu'].includes(key)) {
+        activateKey(key);
+        playKeySound('click');
+      } else {
+        typingArea.value += key;
+        activateKey(key);
+        playKeySound('click');
+      }
+      updateStats();
+      typingArea.focus();
+    });
+
+    // ---------- انتخاب زبان ----------
+    function populateUiLangSelect() {
+      const select = uiLangSelect;
+      select.innerHTML = '';
+      for (let [code, name] of Object.entries(langNames)) {
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = name;
+        select.appendChild(opt);
+      }
+      select.value = currentUiLang;
+    }
+
+    function populateTypingLangSelect() {
+      const select = typingLangSelect;
+      select.innerHTML = '';
+      for (let [code, name] of Object.entries(langNames)) {
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = name;
+        select.appendChild(opt);
+      }
+      select.value = currentTypingLang;
+    }
+
+    uiLangSelect.addEventListener('change', function() {
+      currentUiLang = this.value;
+      updateUI();
+      if (currentUiLang === 'fa' || currentUiLang === 'ar') {
+        typingArea.dir = 'rtl';
+      } else {
+        typingArea.dir = 'ltr';
+      }
+    });
+
+    typingLangSelect.addEventListener('change', function() {
+      currentTypingLang = this.value;
+      buildKeyboard(currentTypingLang);
+      if (currentTypingLang === 'fa' || currentTypingLang === 'ar') {
+        typingArea.dir = 'rtl';
+      } else {
+        typingArea.dir = 'ltr';
+      }
+      typingArea.placeholder = t('placeholder');
+      typingArea.focus();
+    });
+
+    // ---------- صفحه خوش‌آمدگویی ----------
+    function populateWelcomeLangs() {
+      const container = welcomeLangSelector;
+      container.innerHTML = '';
+      let first = true;
+      for (let [code, name] of Object.entries(langNames)) {
+        const label = document.createElement('label');
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'welcomeLang';
+        radio.value = code;
+        if (first) { radio.checked = true; first = false; }
+        const span = document.createElement('span');
+        span.textContent = name;
+        label.appendChild(radio);
+        label.appendChild(span);
+        container.appendChild(label);
+      }
+    }
+
+    enterBtn.addEventListener('click', function() {
+      const selected = document.querySelector('input[name="welcomeLang"]:checked');
+      if (selected) {
+        currentUiLang = selected.value;
+        uiLangSelect.value = currentUiLang;
+        welcomePage.classList.remove('active');
+        mainPage.classList.add('active');
+        buildKeyboard(currentTypingLang);
+        updateUI();
+        if (currentUiLang === 'fa' || currentUiLang === 'ar') {
+          typingArea.dir = 'rtl';
+        } else {
+          typingArea.dir = 'ltr';
+        }
+        typingArea.placeholder = t('placeholder');
+        typingArea.focus();
+        updateStats();
+      }
+    });
+
+    // مقداردهی اولیه
+    populateUiLangSelect();
+    populateTypingLangSelect();
+    populateWelcomeLangs();
+    buildKeyboard('en');
+    updateUI();
+
+  })();
+</script>
+</body>
+</html>
